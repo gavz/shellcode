@@ -23,7 +23,7 @@ _start:
     
     .code 16
     // execve("/bin/sh", {"/bin/sh", "-c", cmd, NULL}, NULL);
-    eor    r3, r3, r3     // r3 = NULL
+    eor    r3, r3         // r3 = NULL
     push   {r1, r2, r3}
     mov    r0, sp         // r0 = "/bin/sh"
     
