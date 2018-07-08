@@ -157,9 +157,3 @@ https://github.com/rwfpl/rewolf-wow64ext
 
 [1] A small, null-free Windows shellcode that executes calc.exe (x86/x64, all OS/SPs) 
   https://github.com/peterferrie/win-exec-calc-shellcode
-
-
-[ contact
-
-Twitter @odzhancode
-

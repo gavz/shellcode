@@ -99,8 +99,3 @@ The following are screenshots of some legacy systems running the bind assembly c
 ## Windows XP ##
 
 ![alt text](https://github.com/odzhan/shellcode/blob/master/win/ss/winxp.png)
-    
-## Author ##
-
-[@odzhancode](https://www.twitter.com/odzhancode "Follow me on Twitter")
-1/28/2017 12:05:50 AM 

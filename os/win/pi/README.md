@@ -30,8 +30,3 @@ Simply supply a process name/process id along with PIC/DLL file or command line.
 ## Supported Platforms ##
 
 This has been tested successfully on x86 CPU running Windows NT 4.0 - Windows 10.
-## Author ##
-
-[@odzhancode](https://www.twitter.com/odzhancode "Follow me on Twitter")
-
-1/28/2017 12:05:50 AM 

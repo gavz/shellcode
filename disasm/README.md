@@ -65,9 +65,3 @@ There's already prebuilt library in **disasm\capstone** folder
 	disasm bin\sc_9 -asparc
 
 ![alt text](https://github.com/odzhan/shellcode/blob/master/disasm/img/sparc.png)
-
-## Author ##
-
-[@odzhancode](https://www.twitter.com/odzhancode "Follow me on Twitter")
- 
-3/5/2017 1:10:17 PM 
