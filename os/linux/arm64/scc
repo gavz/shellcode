@@ -1,0 +1,5 @@
+#/bin/sh
+as $1.s -o$1.o
+ld $1.o -o$1
+objcopy -O binary $1 $1.bin	
+xxd -i $1.bin >$1.h

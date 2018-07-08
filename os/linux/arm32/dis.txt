@@ -1,0 +1,53 @@
+
+bind:     file format elf32-littlearm
+
+
+Disassembly of section .text:
+
+00010054 <_start>:
+   10054:	e59f4054 	ldr	r4, [pc, #84]	; 100b0 <c_dup+0x16>
+   10058:	e59f5054 	ldr	r5, [pc, #84]	; 100b4 <c_dup+0x1a>
+   1005c:	e59f6054 	ldr	r6, [pc, #84]	; 100b8 <c_dup+0x1e>
+   10060:	e28f3001 	add	r3, pc, #1
+   10064:	e12fff13 	bx	r3
+   10068:	4052      	eors	r2, r2
+   1006a:	2101      	movs	r1, #1
+   1006c:	020f      	lsls	r7, r1, #8
+   1006e:	3719      	adds	r7, #25
+   10070:	2002      	movs	r0, #2
+   10072:	df01      	svc	1
+   10074:	4680      	mov	r8, r0
+   10076:	1c21      	adds	r1, r4, #0
+   10078:	b406      	push	{r1, r2}
+   1007a:	4669      	mov	r1, sp
+   1007c:	704a      	strb	r2, [r1, #1]
+   1007e:	2210      	movs	r2, #16
+   10080:	3701      	adds	r7, #1
+   10082:	df01      	svc	1
+   10084:	2101      	movs	r1, #1
+   10086:	4640      	mov	r0, r8
+   10088:	3702      	adds	r7, #2
+   1008a:	df01      	svc	1
+   1008c:	4052      	eors	r2, r2
+   1008e:	4049      	eors	r1, r1
+   10090:	4640      	mov	r0, r8
+   10092:	3701      	adds	r7, #1
+   10094:	df01      	svc	1
+   10096:	4680      	mov	r8, r0
+   10098:	2103      	movs	r1, #3
+
+0001009a <c_dup>:
+   1009a:	273f      	movs	r7, #63	; 0x3f
+   1009c:	4640      	mov	r0, r8
+   1009e:	3901      	subs	r1, #1
+   100a0:	df01      	svc	1
+   100a2:	d1fa      	bne.n	1009a <c_dup>
+   100a4:	1c17      	adds	r7, r2, #0
+   100a6:	b4e0      	push	{r5, r6, r7}
+   100a8:	4668      	mov	r0, sp
+   100aa:	270b      	movs	r7, #11
+   100ac:	df01      	svc	1
+   100ae:	46c0      	nop			; (mov r8, r8)
+   100b0:	d402ff02 	.word	0xd402ff02
+   100b4:	6e69622f 	.word	0x6e69622f
+   100b8:	68732f2f 	.word	0x68732f2f
