@@ -35,6 +35,9 @@
 %define STDOUT_FILENO   1
 %define STDERR_FILENO   2
 
+%define AF_INET         2
+%define SOCK_STREAM     1
+
 %define EPOLLIN     0x001
 
 %define EPOLL_CTL_ADD 1
@@ -80,24 +83,25 @@
 %define SYS_SENDMMSG   20 
 
 %else
-%define SYS_read           0x000
-%define SYS_write          0x001
-%define SYS_open           0x002
-%define SYS_close          0x003
-%define SYS_pipe           0x022
-%define SYS_dup2           0x033
-%define SYS_socket         0x0
-%define SYS_connect        0x0
-%define SYS_listen         0x0
-%define SYS_accept         0x0
-%define SYS_exit           0x001
-%define SYS_fork           0x002 
-%define SYS_execve         0x00B
-%define SYS_kill           0x025
-%define SYS_epoll_ctl      0x0FF
-%define SYS_epoll_wait     0x100
-%define SYS_epoll_create1  0x149
-%define SYS_shutdown       0x175
+%define SYS_read           0
+%define SYS_write          1
+%define SYS_open           2
+%define SYS_close          3
+%define SYS_pipe           22
+%define SYS_dup2           33
+%define SYS_socket         41
+%define SYS_connect        42
+%define SYS_accept         43
+%define SYS_shutdown       48
+%define SYS_bind           49
+%define SYS_listen         50
+%define SYS_fork           57
+%define SYS_execve         59
+%define SYS_exit           60 
+%define SYS_kill           62
+%define SYS_epoll_wait     232
+%define SYS_epoll_ctl      233
+%define SYS_epoll_create1  291
 %endif
 
 %define O_RDONLY             00
