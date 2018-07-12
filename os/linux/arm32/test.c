@@ -166,14 +166,14 @@ void exec_code(void *code, size_t code_len, char *ip_str) {
 
 int main(int argc, char *argv[]) {
 
-	#ifdef CONNECT
-	  if(argc!=2){
-		printf("usage: test <ip address>\n");
-		return 0;
-	  }
-	#endif
-	
-	exec_code(CODE, CODE_SIZE,argv[1]);
+    #ifdef CONNECT
+      if(argc!=2){
+        printf("usage: test <ip address>\n");
+        return 0;
+      }
+    #endif
+    
+    exec_code(CODE, CODE_SIZE,argv[1]);
     
     return 0;
 }
