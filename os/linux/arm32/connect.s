@@ -62,4 +62,3 @@ c_dup:
     mov    r7, #11       // r7 = execve
     svc    1
     nop                  // alignment by 4 bytes
-    

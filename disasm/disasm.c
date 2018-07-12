@@ -138,7 +138,7 @@ arch_t opt_arch[]=
 // disassembly options
 typedef struct disasm_opt_t {
   int    arch, mode, syntax;
-  int    ofs, hex, fmt;
+  int    ofs, hex, fmt, data;
   char   *file, *arch_desc, *mode_desc, *endian_desc;
   #ifdef WINDOWS
     HANDLE fd, map;
@@ -189,22 +189,25 @@ void get_max(disasm_opt *opt)
   size_t        len;
   int           r;
   
-  printf ("cs_open\n");
   cs_open(opt->arch, opt->mode, &handle);
   
   if (opt->arch==CS_ARCH_X86) {
-    printf ("cs_option\n");
     cs_option(handle, CS_OPT_SYNTAX, opt->syntax);
   }
     
-  printf ("cs_malloc\n");  
   insn = (cs_insn*)cs_malloc(handle);
   
   for (;;)
   {
-    printf ("cs_iter\n");
     r = cs_disasm_iter(handle, &code, &code_len, &address, insn); 
 
+      if(memcmp(&insn->bytes[1], "\xff\x2f\xe1", 3)==0) {
+	  	  cs_free(insn,1);
+		  cs_close(&handle);
+		
+		  cs_open(opt->arch, CS_MODE_THUMB, &handle);
+          insn = (cs_insn*)cs_malloc(handle);
+	  }
     // failed to disassemble?
     if (!r) {
       // have we still got code left?
@@ -228,9 +231,7 @@ void get_max(disasm_opt *opt)
       opt->max_bytes = (len>opt->max_bytes) ? len : opt->max_bytes;   
     }
   }
-  printf ("cs_free\n");
   cs_free(insn, 1);
-  printf ("cs_close\n");
   cs_close(&handle);    
 }
 
@@ -302,33 +303,55 @@ void disasm (disasm_opt *opt)
   
   for (;;)
   {
-    r = cs_disasm_iter(handle, &code, &code_len, &address, insn); 
+    if(address >= opt->size) break;  
+    
+	if(address < opt->data){
+      r = cs_disasm_iter(handle, &code, &code_len, &address, insn); 
 
-    // failed to disassemble?
-    if (!r) {
-      // have we still got code left?
-      if (code_len != 0) {
-        // try advance our position anyway
-        len = (code_len < 4) ? code_len : 4;
-        memcpy (insn->bytes, code, len);
-        code += len;
-        code_len -= len;
-        insn->size = len;
-        insn->address += len;
-      } else break;
-    }
+      if(memcmp(&insn->bytes[1], "\xff\x2f\xe1", 3)==0){
+	  	  cs_free(insn,1);
+		  cs_close(&handle);
+		
+		  cs_open(opt->arch, CS_MODE_THUMB, &handle);
+          insn = (cs_insn*)cs_malloc(handle);
+	  }
+	
+      // failed to disassemble?
+      if (!r) {
+        // have we still got code left?
+        if (code_len != 0) {
+          // try advance our position anyway
+          len = (code_len < 4) ? code_len : 4;
+          memcpy (insn->bytes, code, len);
+          code += len;
+          code_len -= len;
+          insn->size = len;
+          insn->address += len;
+        } else break;
+      }
     
-    len = insn->size;
-    ofs = insn->address;
+      len = insn->size;
+      ofs = insn->address;
     
-    if (r) {
-      memset(ins, 0, sizeof(ins));
+      if (r) {
+        memset(ins, 0, sizeof(ins));
       
-      snprintf(ins, sizeof(ins), "%-*s %s", 
-          (int)opt->max_mnc, insn->mnemonic, insn->op_str);
-    }
-    putchar('\n');
-    
+        snprintf(ins, sizeof(ins), "%-*s %s", 
+            (int)opt->max_mnc, insn->mnemonic, insn->op_str);
+      }
+    } else {
+		len=(len==2)?2:4;
+		memcpy (insn->bytes, code, len);
+		code_len -= len;
+		code += len;
+		ofs = address;
+		address += len;
+		insn->size = len;
+		insn->address += len;
+	}
+	
+	putchar('\n');
+	
     // print the offset if required
     if (opt->ofs) {
       printf ("  /* %04X */ ", (uint32_t)ofs);
@@ -346,7 +369,7 @@ void disasm (disasm_opt *opt)
     while (len++ < insn_max) putchar (' ');
     
     // print asm string
-    if (r) printf (" /* %-*s */", asm_max, ins);    
+    if(insn->address < opt->data && r) printf (" /* %-*s */", asm_max, ins);  
   }
   printf("\n};");
   
@@ -459,6 +482,7 @@ void usage(void)
   
   printf ("\nusage: disasm [options] <file>\n");
   printf ("\n  -a <arch>    CPU architecture to disassemble for");
+  printf ("\n  -d <offset>  Offset of data");
   printf ("\n  -m <mode>    CPU mode"); 
   printf ("\n  -e <order>   Endianess. be or le"); 
   printf ("\n  -s <syntax>  Syntax format for x86. att or intel (default)");  
@@ -599,6 +623,7 @@ int main (int argc, char *argv[])
   opt.syntax      = CS_OPT_SYNTAX_INTEL;
   opt.ofs         = 1;
   opt.hex         = 1;
+  opt.data        = -1;
   
   // for each argument
   for (i=1; i<argc; i++)
@@ -612,25 +637,28 @@ int main (int argc, char *argv[])
       switch (c)
       {
         case 'a':     // architecture
-          arch   = get_param(argc, argv, &i);
+          arch     = get_param(argc, argv, &i);
           break;
+        case 'd':    // offset of data
+		  opt.data = atoi(get_param(argc, argv, &i));
+		  break;
         case 'e':
-          endian = get_param(argc, argv, &i);
+          endian   = get_param(argc, argv, &i);
           break;          
         case 'm':     // cpu mode
-          mode   = get_param(argc, argv, &i);
+          mode     = get_param(argc, argv, &i);
           break;
         case 'f':     // output format
-          format = get_param(argc, argv, &i);
+          format   = get_param(argc, argv, &i);
           break;
         case 'o':     // don't display offsets
-          opt.ofs= 0;
+          opt.ofs  = 0;
           break;
         case 's':     // syntax
-          syntax = get_param(argc, argv, &i);
+          syntax   = get_param(argc, argv, &i);
           break;           
         case 'x':     // don't display hex bytes
-          opt.hex= 0;
+          opt.hex  = 0;
           break;
         case '?':     // display usage
         case 'h':
